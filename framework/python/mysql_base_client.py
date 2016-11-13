@@ -62,10 +62,11 @@ print "Checking MySQL Connectivity"
 
 cmd = "mysql %s -e 'SHOW DATABASES'" % (mysql_args)
 output = myrun(cmd)
-mysql_connect = false
+mysql_connect = False
 for line in output:
+    print line
     if line == 'mysql':
-	mysql_connect = true
+	mysql_connect = True
 
 if mysql_connect:
     print "MySQL connected successfully"
