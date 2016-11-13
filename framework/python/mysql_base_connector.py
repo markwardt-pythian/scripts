@@ -1,41 +1,86 @@
 #!/usr/bin/python
 
-import argparse
+import sys
+import getopt
+import subprocess
+import MySQLdb
 
-parser = argparse.ArgumentParser(description='This is a parameter example that prints intervals', add_help=False)
+# Requires the Pyton MySQL module installed for MySQLdb import
 
-#Required
+mysql_host = 'localhost'
+mysql_user = ''
+mysql_pass = ''
 
-parser.add_argument('-i', '--interval', type=int, help='Interval in seconds', required=True)
-parser.add_argument('-u', '--user', required=True, help="Keep Required Together")
+print
 
-# Not Required
-parser.add_argument('-e', '--enum', choices=['rock', 'paper', 'scissors'])
-parser.add_argument('-p', '--password')
-parser.add_argument('-T', '--store_true', action='store_true')
-parser.add_argument('-F', '--store_false', action='store_false')
-parser.add_argument('-D', '--store_default', action='store_const', const=42, help='Stores Value : 42')
-parser.add_argument('-l', '--length', default='10', type=int)
+# Functions
 
-# In File Out File
+def usage():
+    print
+    print "Usage : "
+    print "-h --host        Description : MySQL host to connect to."
+    print "-u --user        Description : MySQL account username."
+    print "-p --password    Description : MySQL account password."
+    print "-H --help        Description : Show script usage."
+    print
+    print "Example : "
+    print "%s " % sys.argv[0]
+    print "%s -h server -u root -p password" % sys.argv[0]
+    print
 
-parser.add_argument('-I', metavar='in-file', type=argparse.FileType('rt'))
-parser.add_argument('-O', metavar='out-file', type=argparse.FileType('wt'))
+def myrun(cmd):
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    stdout = []
+    for line in p.stdout:
+        line = str(line).rstrip()
+        stdout.append(line)
 
+    return stdout
+
+# Process command line arguments
 try:
-    results = parser.parse_args()
-    print 'Input file:', results.I
-    print 'Output file:', results.O
-except IOError, msg:
-    parser.error(str(msg))
+    myopts, args = getopt.getopt(sys.argv[1:],"h:u:p:H:",['host=','user=','password=','help'])
+except getopt.GetoptError as e:
+    print (str(e))
+    usage()
+    sys.exit(2)
 
-parser.print_help()
+for o, a in myopts:
+    if o in ("-h", "--host"):
+        mysql_host = a
+    elif o in ("-u", "--user"):
+        mysql_user = a
+    elif o in ("-p", "--password"):
+        mysql_pass = a
+    elif o in ("-H", "--help"):
+        print "Displaying usage"
+        usage()
+        sys.exit()
+    else:
+        assert False, "unhandled option"
 
-print
-print "These are the results from the arguments"
-print results
-print
+db = MySQLdb.connect(
+    host=mysql_host,    # your host, usually localhost
+    user=mysql_user,         # your username
+    passwd=mysql_pass,  # your password
+    db="mysql")        # name of the data base
 
-print "Setting one of the parameters to a variable and printing"
-username = results.user
-print username
+print "Checking MySQL Connectivity"
+
+cur = db.cursor()
+cur.execute("SHOW DATABASES")
+
+for row in cur.fetchall():
+    print row[0]
+    if row[0] == 'mysql':
+        mysql_connect = True
+
+db.close()
+
+if mysql_connect:
+    print "MySQL connected successfully"
+else:
+    print "MySQL connection failed!"
+    sys.exit()
+
+# Continue the rest of the script
