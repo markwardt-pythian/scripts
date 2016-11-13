@@ -36,6 +36,7 @@ except IOError, msg:
     parser.print_help()
 
 # Configuring MySQL command line parameters
+
 if results.user is not None and results.defaults is not None:
     parser.error("Please use either User or Defaults, and not both")
     sys.exit()
@@ -55,12 +56,21 @@ if results.password is not None:
     mysql_pass = results.password
     mysql_args = " -p %s" % (mysql_pass)
 
+# Validating MySQL connectivity
+
 print "Checking MySQL Connectivity"
 
 cmd = "mysql %s -e 'SHOW DATABASES'" % (mysql_args)
 output = myrun(cmd)
-line_num = 0
+mysql_connect = false
 for line in output:
-        #print line
-        print "PRINT %s : %s" % (line_num, line)
-        line_num = line_num + 1
+    if line == 'mysql':
+	mysql_connect = true
+
+if mysql_connect:
+    print "MySQL connected successfully"
+else:
+    print "MySQL connection failed!"
+    sys.exit()
+
+# Continue the rest of the script
