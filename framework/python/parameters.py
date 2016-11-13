@@ -37,9 +37,7 @@ for o, a in myopts:
         try:
             beta = int(a)
         except ValueError:
-            print "Beta should be an integer"
-            print a
-            print beta
+            print "Beta option '%s' should be a number" % a
             usage()
             sys.exit()
     elif o in ("-c", "--charlie"):
