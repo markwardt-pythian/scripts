@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# I have found that argparse is not always installed by default.  This module may have to be installed seperately from Python
+
 import argparse
 
 parser = argparse.ArgumentParser(description='This is a parameter example that prints intervals', add_help=False)
