@@ -60,7 +60,7 @@ for o, a in myopts:
             sys.exit()
     elif o in ("-p", "--password"):
         mysql_pass = a
-        mysql_args = "%s -p %s" % (mysql_args, mysql_pass)
+        mysql_args = "%s -p%s" % (mysql_args, mysql_pass)
     elif o in ("-d", "--defaults"):
         if mysql_user == '' and mysql_pass == '':
             mysql_defaults = a
@@ -77,8 +77,6 @@ for o, a in myopts:
         assert False, "unhandled option"
 
 # Building MySQL connection arguments
-print "Using MySQL Client Parameters %s" % mysql_args
-
 print "Checking MySQL Connectivity"
 
 cmd = "mysql %s -e 'SHOW DATABASES'" % mysql_args
@@ -94,4 +92,22 @@ else:
     print "MySQL connection failed!"
     sys.exit()
 
-# Continue the rest of the script
+cmd1 = "mysql %s -e \"SELECT user FROM mysql.user\" | grep -v user" % (mysql_args)
+output = myrun(cmd1)
+failed_users = []
+for line in output:
+    #print line
+    cmd2 = "mysql %s -e \"SELECT PASSWORD('%s')\" | grep -v PASSWORD" % (mysql_args, line)
+    #cmd = 'ls'
+    user_hash = myrun(cmd2)
+    #print "USERNAME HASH = %s" % user_hash[0]
+    cmd3 = "mysql %s -e \"SELECT password FROM mysql.user WHERE user = '%s'\" | grep -v password" % (mysql_args, line)
+    #print cmd2
+    mysql_hash = myrun(cmd3)
+    #print "PASSWORD HASH = %s" % mysql_hash[0]
+    if user_hash == mysql_hash:
+        print "!! HASHES MATCH FOR %s" % line
+    	failed_users.append(line)
+
+print "The following users have a username and password that match"
+print failed_users
