@@ -7,9 +7,9 @@
 
 ### Bash Scripting Framework
 
-#mysql_connectivity.sh#
+#### mysql_connectivity.sh
 Initial bash template with MySQL connectivity checking  
 
-parameters.sh
+#### parameters.sh
 
 
