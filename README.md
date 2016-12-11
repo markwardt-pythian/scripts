@@ -1,15 +1,3 @@
-#Scripts
+# Framework
 
-## Framework
-
-### Python Scripting Framework
-
-
-### Bash Scripting Framework
-
-#### mysql_connectivity.sh
-Initial bash template with MySQL connectivity checking  
-
-#### parameters.sh
-
-
+Framework contains templates for the basic framework of scripts for repeatable use
