@@ -2,7 +2,8 @@
 
 import sys
 import getopt
-import lib
+from lib.OSCollector import OSCollector
+from lib.MySQLCollector import MySQLCollector
 import os
 import subprocess
 
@@ -124,10 +125,20 @@ if debug:
 
 mysql_connect = False
 if 'mysql' in output:
-    print "MySQL connected successfully"
+    print "    MySQL connected successfully"
 else:
-    print "MySQL connection failed!"
+    print "    MySQL connection failed!"
     usage()
     sys.exit()
 
+print
+print("Starting OS Collection")
+print
 
+os_collector = OSCollector()
+os_data = os_collector.collect()
+print(os_data)
+
+mysql_collector = MySQLCollector(mysql_args)
+mysql_data = mysql_collector.collect()
+print(mysql_data)
